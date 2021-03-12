@@ -1,212 +1,203 @@
 import os
-from hashlib import md5
+import time
 import json
-from tabulate import tabulate
+
+from StationMsg import StationMsg
+
 
 class Ypsilon:
-    save_file = "./game_save.json"
-    message = None
+    actions = []
+    timestamp = None
+    error = False
+    # Zerowanie zapisu akcji po podanym czasie
+    terminal_waitinf = 300
+    auth = False
+    # zmienne
+    airlock_docking_bay_1 = False
+    airlock_docking_bay_2 = False
+    airlock_mineshaft = False
+    shower_1 = False
+    shower_2 = False
+    shower_3 = False
+    shower_4 = False
+    shower_5 = False
 
-    init_msg = """```
- _   __        _ _               _____ _        _   _             
-\ \ / /       (_) |             /  ___| |      | | (_)            
- \ V / __  ___ _| | ___  _ __   \ `--.| |_ __ _| |_ _  ___  _ __  
-  \ / '_ \/ __| | |/ _ \| '_ \   `--. \ __/ _` | __| |/ _ \| '_ \ 
-  | | |_) \__ \ | | (_) | | | | /\__/ / || (_| | |_| | (_) | | | |
-  \_/ .__/|___/_|_|\___/|_| |_| \____/ \__\__,_|\__|_|\___/|_| |_|
-    | |                                                           
-    |_|              
-    FLEET COMMODORE SYSTEMS © 2246 - GUILD LICENSE
-    PROGRAM OPERATION GROUP SOFTWARE (P.O.G.S.)
-    ----------
-    WARNING - LICENSE EXPIRED
-    CONTACT SYSTEMS ADMINISTRATOR
-    ----------
-    YPSILON 14 CONTROL TERMINAL:
-        >DIAGNOSTICS
-        >SCHEDULE
-        >CONTROLS
-        >ROSTER
-        >COMMS
-    ```"""
+    def __init__(self):
+        print("FIFLAK")
+        if os.path.exists("./saves/action.json"):
+            with open("./saves/action.json") as json_file:
+                data = json.load(json_file)
+                if 'action' in data:
+                    self.actions = data['action']
+                if 'auth' in data:
+                    self.auth = data['auth']
 
-    # main_menu = """```
-    # ----------------------------
-    # YPSILON 14 CONTROL TERMINAL:
-    #     >DIAGNOSTICS
-    #     >SCHEDULE
-    #     >CONTROLS
-    #     >ROSTER
-    #     >COMMS
-    # ----------------------------
-    # ```"""
-    def main_menu(self):
-        menu = [
-            ["1","DIAGNOSTICS"],
-            ["2","SCHEDULE"],
-            ["3","CONTROLS"],
-            ["4","ROSTER"],
-            ["5","COMMS"],
-        ]
-        return "```YPSILON 14 CONTROL TERMINAL: \n" + tabulate(menu,tablefmt='grid') + "```"
+                vars = ['airlock_docking_bay_1','airlock_docking_bay_2','airlock_mineshaft','shower_1','shower_2','shower_3','shower_4','shower_5']
+                for v in vars:
+                    if v in data:
+                        exec("self."+v + "= " + str(data[v]))
 
-    def __init__(self, message):
-        if message.find(" ") > -1:
-            self.message = message.split(' ')
-        else:
-            self.message = [message]
-        if ~os.path.isfile(self.save_file):
-            with open(self.save_file, 'a'):
-                os.utime(self.save_file, None)
-
-    def action(self):
-        data = None
-        msg = False
-
-        with open(self.save_file) as f:
-            data = json.load(f)
-
-        if 'action' in data:
-            if len(self.message) == 1:
-                msg = self.init_msg
-                self.save('init')
-            else:
-                cmd = self.message[1]
-                action = data['action']
-                if action == 'init':
-                    msg = eval("self." + cmd + "()")
+                if 'timestamp' in data:
+                    self.timestamp = data['timestamp']
                 else:
-                    if action.find("diagnostics") > -1:
-                        msg = self.diagnostics(cmd,action)
-                    elif action.find('schedule') > -1:
-                        msg = self.schedule(cmd)
+                    self.timestamp = time.time()
         else:
-            msg = self.init_msg
-            self.save('init')
+            with open("./saves/action.json", 'w') as outfile:
+                json.dump({'action': [], 'timestamp': time.time()}, outfile)
 
-        if msg is False:
-            msg = "SYNTAX ERROR"
-        return msg
+        if self.timestamp + self.terminal_waitinf < time.time():
+            self.timestamp = time.time()
+            self.actions = []
+            with open("./saves/action.json", 'w') as outfile:
+                json.dump({'action': [], 'timestamp': time.time(), 'auth': False}, outfile)
 
-    def save(self, action: str):
-        with open(self.save_file, 'w') as outfile:
-            json.dump({'action': action}, outfile)
-
-    def diagnostics(self, step='', save = ''):
-        if step == '':
-            self.save('diagnostics')
-            msg = """```
-DIAGNOSTICS
-    > LAYOUT
-    > STATUS
-    < BACK```"""
-        elif step == "layout":
-            self.save('diagnostics,layout')
-
-            msg = """```
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓__   _____  ___ ___ _    ___  _  _   _ _ _  ▓
-▓\ \ / / _ \/ __|_ _| |  / _ \| \| | / | | | ▓
-▓ \ V /|  _/\__ \| || |_| (_) | .` | | |_  _|▓
-▓  |_| |_|  |___/___|____\___/|_|\_| |_| |_| ▓
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓ | DOCK 1| DOCK 2|         ▓▓GUILD LICENSE▓▓▓
-▓    ] [     ] [            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓  ___X_______X___     ______    _________   ▓
-▓ |      =C=      |   |8 |9|0|  | ooo /\  |  ▓
-▓ |   WORKSPACE   |___|7     |__| MESS    |  ▓
-▓ |               ____     _____  ooo  0  |  ▓
-▓ |    \----/     |   |_    1|  |_________|  ▓
-▓ |    /MINE\     |   |6   |_|__|  WASH ~~|  ▓
-▓ |    \----/     |   |5    ____   ROOM ~~|  ▓
-▓ |_______________|   |4|3|2 |  |_|_|_|_|_|  ▓
-▓        o↑           QUARTERS               ▓
-▓       _o↓_          ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓      X___|MINESHAFT ▓        ROSTER        ▓
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 1 SONYA    6 MORGAN  ▓
-▓-------LEGEND--------▓ 2 ASHRAF   7 RIE     ▓
-▓  X    AIRLOCK       ▓ 3 DANA     8 ROSA    ▓
-▓ =C=  COMPUTER       ▓ 4 JEROME   9 MIKE    ▓
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 5 KANTARO  0 N/A     ▓
-▓                     ▓                      ▓
-▓  DOCK 1  ▓  DOCK 2  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-▓          ▓          ▓                      ▓
-▓ HERACLES ▓ RESUPPLY ▓VERSION SOFTWARE 2.25B▓
-▓          ▓          ▓                      ▓
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-  >DOWNLOAD     >BACK```"""
-        elif step == "download":
-            if save == 'diagnostics,layout':
-                self.save('diagnostics,download')
-                msg = """```
-DOWNLOADING...
-.
-.
-.
-DOWNLOAD COMPLETE.
-
-DIAGNOSTICS
-         > LAYOUT
-         > STATUS
-         < BACK
-```"""
+    def action(self, cmd):
+        response = StationMsg()
+        cmd = cmd.replace('>', '').lower()
+        # komendy specjalne
+        if cmd == 'station':
+            self.actions = []
+        result = ''
+        # terminal  options
+        if len(self.actions) == 0 :
+            result = response.hello()
+            self.actions.append('init')
+        elif len(self.actions) == 1:
+            if cmd == "diagnostics":
+                self.actions.append(cmd)
+                result = response.menu_diagnostics()
+            elif cmd == "controls":
+                self.actions.append(cmd)
+                result = response.menu_controls()
+            elif cmd == "schedule":
+                self.actions.append(cmd)
+                result = response.schedule()
+            elif cmd == 'roster':
+                self.actions.append(cmd)
+                result = response.roster()
+            elif cmd == "comms":
+                self.actions.append(cmd)
+                result = response.comms_menu()
+            elif cmd == "back":
+                result = response.menu_main()
+                self.actions.pop()
             else:
-                msg = False
-        elif step == "back":
-            if save == "diagnostics":
-                self.save('init')
-                msg = self.main_menu()
-            else :
-                self.save('diagnostics')
-                msg = """```
- DIAGNOSTICS
-     > LAYOUT
-     > STATUS
-     < BACK```"""
+                self.error = True
+                result = response.syntax_error()
+        elif len(self.actions) == 2:
+            if self.actions[1] == "diagnostics":
+                if cmd == "layout":
+                    self.actions.append(cmd)
+                    result = response.layout()
+                elif cmd == "status":
+                    self.actions.append(cmd)
+                    result = response.diag_status()
+                elif cmd == "back":
+                    result = response.menu_main()
+                    self.actions.pop()
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            elif self.actions[1] == "schedule":
+                if cmd == "back":
+                    result = response.menu_main()
+                    self.actions.pop()
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            elif self.actions[1] == 'controls':
+                if cmd == 'back':
+                    result = response.menu_main()
+                    self.actions.pop()
+                elif cmd == "airlocks":
+                    self.actions.append(cmd)
+                    result = response.controls_airlock(self.airlock_docking_bay_1,self.airlock_docking_bay_2,self.airlock_mineshaft)
+                elif cmd == "showers":
+                    self.actions.append(cmd)
+                    result = response.controll_shower()
+                elif cmd == "system":
+                    # self.actions.append(cmd)
+                    result = response.controll_system(self.auth)
+                elif cmd == "insert sonya keycard":
+                    self.auth = True
+                    result = response.controll_system(self.auth)
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+        elif len(self.actions) == 3:
+            if self.actions[1] == "diagnostics":
+                if self.actions[2] == "status":
+                    if cmd == "back":
+                        result = response.menu_diagnostics()
+                        self.actions.pop()
+                    elif cmd == "back":
+                        result = response.menu_main()
+                        self.actions.pop()
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
+                elif self.actions[2] == "layout":
+                    if cmd == "download":
+                        self.actions.pop()
+                        result = [response.download(), response.menu_diagnostics()]
+                    elif cmd == "back":
+                        result = response.menu_diagnostics()
+                        self.actions.pop()
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
+                elif cmd == 'back':
+                    result = response.menu_main()
+                    self.actions.pop()
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            if self.actions[1] == 'controls':
+                print(cmd)
+                if self.actions[2] == "airlocks":
+                    if cmd == "unlock mineshaft":
+                        self.airlock_mineshaft = True
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == "unlock dock 1" or cmd == "unlock docking bay 1":
+                        self.airlock_docking_bay_1 = True
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == "unlock dock 2" or cmd == "unlock docking bay 2":
+                        self.airlock_docking_bay_2 = True
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == "lock mineshaft":
+                        self.airlock_mineshaft = False
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == "lock dock 1" or cmd == "lock docking bay 1":
+                        self.airlock_docking_bay_1 = False
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == "lock dock 2" or cmd == "lock docking bay 2":
+                        self.airlock_docking_bay_2 = False
+                        result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                           self.airlock_mineshaft)
+                    elif cmd == 'back':
+                        result = response.menu_controls()
+                        self.actions.pop()
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
 
-        elif step == "status":
-            self.save('diagnostics,status')
-            msg = """```
-╔══════════════════════════════════════════════════╗           
-║ WARNING: AIR FILTERS LAST REPLACED 455 DAYS AGO  ║
-╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢ 
-║          (255 DAYS PAST RECOMMENDATION)          ║
-╠══════════════════════════════════════════════════╣
-║ WARNING: SHOWER 5 OUT OF ORDER AS OF 1 DAY AGO   ║
-╠══════════════════════════════════════════════════╣
-║ WARNING: MINESHAFT ELEVATOR LAST MAINTAINED      ║
-║          455 DAYS AGO                            ║
-╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢
-║          (255 DAYS PAST RECOMMENDATION)          ║
-╠══════════════════════════════════════════════════╣
-║ WARNING: AIRFLOW 82%                             ║
-╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢
-║ (SUBOPTIMAL: REPLACE FILTERS AND CHECK VENTS     ║
-║  FOR BLOCKAGES)                                  ║
-╠══════════════════════════════════════════════════╣
-║ ALL SYSTEMS WITHIN ACCEPTABLE OPERATING          ║
-║ CONDITIONS                                       ║
-╚══════════════════════════════════════════════════╝
-< BACK```"""
 
-        return msg
+        if self.error is not True:
+            self.save()
 
-    def schedule(self, step = ''):
-        if step == '':
-            self.save('schedule')
-            return """```
-SCHEDULE:
-2255-07-02 06:33 - IMV GRASSHOPPER    - RESUPPLY - DOCKING BAY 2 - DOCK
-2255-06-04 08:34 - RSV THE HERACLES   - RESEARCH - DOCKING BAY 1 - DOCK
-2255-06-02 12:23 - CTV HORN OV PLENTY - RESUPPLY - DOCKING BAY 2 - DEPART
-2255-06-01 16:04 - CTV HORN OV PLENTY - RESUPPLY - DOCKING BAY 2 - DOCK
-2255-05-02 08:32 - MV VASQUEZ XV      - PICKUP   - DOCKING BAY 1 - DEPART
-2255-05-01 06:02 - MV VASQUEZ XV      - PICKUP   - DOCKING BAY 1 - DOCK
-2255-04-02 13:02 - CTV HORN OV PLENTY - RESUPPLY - DOCKING BAY 2 - DEPART
-2255-04-01 15:54 - CTV HORN OV PLENTY - RESUPPLY - DOCKING BAY 2 - DOCK
-2255-03-02 08:33 - MV VAZQUEZ XV      - PICKUP   - DOCKING BAY 1 - DEPART
-2255-03-01 06:04 - MV VAZQUEZ XV      - PICKUP   - DOCKING BAY 1 - DOCK
-< BACK```"""
-        else:
-            self.save('init')
-            return self.main_menu()
+        return result
+
+    def save(self):
+        with open("./saves/action.json", 'w') as outfile:
+            json.dump({
+                'action': self.actions,
+                'timestamp': time.time(),
+                'airlock_docking_bay_1':self.airlock_docking_bay_1,
+                'airlock_docking_bay_2':self.airlock_docking_bay_2,
+                'airlock_mineshaft':self.airlock_mineshaft,
+            }, outfile)

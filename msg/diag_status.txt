@@ -1,0 +1,22 @@
+╔══════════════════════════════════════════════════╗
+║ WARNING: AIR FILTERS LAST REPLACED 455 DAYS AGO  ║
+╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢
+║          (255 DAYS PAST RECOMMENDATION)          ║
+╠══════════════════════════════════════════════════╣
+║ WARNING: SHOWER 5 OUT OF ORDER AS OF 1 DAY AGO   ║
+╠══════════════════════════════════════════════════╣
+║ WARNING: MINESHAFT ELEVATOR LAST MAINTAINED      ║
+║          455 DAYS AGO                            ║
+╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢
+║          (255 DAYS PAST RECOMMENDATION)          ║
+╠══════════════════════════════════════════════════╣
+║ WARNING: AIRFLOW 82%                             ║
+╟−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−╢
+║ (SUBOPTIMAL: REPLACE FILTERS AND CHECK VENTS     ║
+║  FOR BLOCKAGES)                                  ║
+╠══════════════════════════════════════════════════╣
+║ ALL SYSTEMS WITHIN ACCEPTABLE OPERATING          ║
+║ CONDITIONS                                       ║
+╠══════════════════════════════════════════════════╣
+║ > BACK                                           ║
+╚══════════════════════════════════════════════════╝

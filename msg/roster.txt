@@ -1,0 +1,16 @@
+╔══════════════════════════════════════════════╗
+║ ROSTER:                                      ║
+╟−−−−┬−−−−−−−−−−−−−-------┬−−−−−−−−−−−−−−−−--−-╢
+║ 01 | VERHOEVEN, SONYA   | OVERSEER           ║
+║ 02 | SINGH, ASHRAF      | BREAKER            ║
+║ 03 | DE BEERS, DANA     | HEAD DRILLER       ║
+║ 04 | HUIZINGA, JEROME   | ASST. DRILLER      ║
+║ 05 | TOBIN, ROSA        | MINING ENGINEER    ║
+║ 06 | MIKKELSEN, MICHAEL | MINING ENGINEER    ║
+║ 07 | KANTARO, KENJI     | LOADER             ║
+║ 08 | OBOWE, MORGAN      | LOADER             ║
+║ 09 | KENBISHI, RIE      | PUTTER             ║
+║ 10 | VACANT             |                    ║
+╟−−-−┴−−−−−−−−−−−---−--−-−┴−−−−−−−−−−−−−−−−-−--╢
+║ > BACK                                       ║
+╚══════════════════════════════════════════════╝
