@@ -23,7 +23,6 @@ class Ypsilon:
     shower_5 = False
 
     def __init__(self):
-        print("FIFLAK")
         if os.path.exists("./saves/action.json"):
             with open("./saves/action.json") as json_file:
                 data = json.load(json_file)
@@ -32,10 +31,11 @@ class Ypsilon:
                 if 'auth' in data:
                     self.auth = data['auth']
 
-                vars = ['airlock_docking_bay_1','airlock_docking_bay_2','airlock_mineshaft','shower_1','shower_2','shower_3','shower_4','shower_5']
+                vars = ['airlock_docking_bay_1', 'airlock_docking_bay_2', 'airlock_mineshaft', 'shower_1', 'shower_2',
+                        'shower_3', 'shower_4', 'shower_5', 'shower_1','shower_2','shower_3', 'shower_4','shower_5']
                 for v in vars:
                     if v in data:
-                        exec("self."+v + "= " + str(data[v]))
+                        exec("self." + v + "= " + str(data[v]))
 
                 if 'timestamp' in data:
                     self.timestamp = data['timestamp']
@@ -58,8 +58,8 @@ class Ypsilon:
         if cmd == 'station':
             self.actions = []
         result = ''
-        # terminal  options
-        if len(self.actions) == 0 :
+        # terminal opcje
+        if len(self.actions) == 0:
             result = response.hello()
             self.actions.append('init')
         elif len(self.actions) == 1:
@@ -111,10 +111,11 @@ class Ypsilon:
                     self.actions.pop()
                 elif cmd == "airlocks":
                     self.actions.append(cmd)
-                    result = response.controls_airlock(self.airlock_docking_bay_1,self.airlock_docking_bay_2,self.airlock_mineshaft)
+                    result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
+                                                       self.airlock_mineshaft)
                 elif cmd == "showers":
                     self.actions.append(cmd)
-                    result = response.controll_shower()
+                    result = response.controll_shower(self.shower_1,self.shower_2,self.shower_3,self.shower_4,self.shower_5)
                 elif cmd == "system":
                     # self.actions.append(cmd)
                     result = response.controll_system(self.auth)
@@ -185,7 +186,50 @@ class Ypsilon:
                     else:
                         self.error = True
                         result = response.syntax_error()
-
+                elif self.actions[2] == "showers":
+                    if cmd == "shower 1 unlock":
+                        self.shower_1 = True
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 2 unlock":
+                        self.shower_2 = True
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 3 unlock":
+                        self.shower_3 = True
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 4 unlock":
+                        self.shower_4 = True
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 5 unlock":
+                        self.shower_5 = True
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 1 lock":
+                        self.shower_1 = False
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 2 lock":
+                        self.shower_2 = False
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 3 lock":
+                        self.shower_3 = False
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 4 lock":
+                        self.shower_4 = False
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    elif cmd == "shower 5 lock":
+                        self.shower_5 = False
+                        result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                          self.shower_5)
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
 
         if self.error is not True:
             self.save()
@@ -197,7 +241,12 @@ class Ypsilon:
             json.dump({
                 'action': self.actions,
                 'timestamp': time.time(),
-                'airlock_docking_bay_1':self.airlock_docking_bay_1,
-                'airlock_docking_bay_2':self.airlock_docking_bay_2,
-                'airlock_mineshaft':self.airlock_mineshaft,
+                'airlock_docking_bay_1': self.airlock_docking_bay_1,
+                'airlock_docking_bay_2': self.airlock_docking_bay_2,
+                'airlock_mineshaft': self.airlock_mineshaft,
+                'shower_1':self.shower_1,
+                'shower_2':self.shower_2,
+                'shower_3':self.shower_3,
+                'shower_4':self.shower_4,
+                'shower_5':self.shower_5,
             }, outfile)
