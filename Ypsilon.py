@@ -21,6 +21,7 @@ class Ypsilon:
     shower_3 = False
     shower_4 = False
     shower_5 = False
+    life_support = True
 
     def __init__(self):
         if os.path.exists("./saves/action.json"):
@@ -32,7 +33,8 @@ class Ypsilon:
                     self.auth = data['auth']
 
                 vars = ['airlock_docking_bay_1', 'airlock_docking_bay_2', 'airlock_mineshaft', 'shower_1', 'shower_2',
-                        'shower_3', 'shower_4', 'shower_5', 'shower_1','shower_2','shower_3', 'shower_4','shower_5']
+                        'shower_3', 'shower_4', 'shower_5', 'shower_1', 'shower_2', 'shower_3', 'shower_4', 'shower_5',
+                        'life_support','auth']
                 for v in vars:
                     if v in data:
                         exec("self." + v + "= " + str(data[v]))
@@ -115,13 +117,25 @@ class Ypsilon:
                                                        self.airlock_mineshaft)
                 elif cmd == "showers":
                     self.actions.append(cmd)
-                    result = response.controll_shower(self.shower_1,self.shower_2,self.shower_3,self.shower_4,self.shower_5)
+                    result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
+                                                      self.shower_5)
                 elif cmd == "system":
                     # self.actions.append(cmd)
                     result = response.controll_system(self.auth)
                 elif cmd == "insert sonya keycard":
                     self.auth = True
                     result = response.controll_system(self.auth)
+                elif cmd == "remove sonya keycard":
+                    self.auth = False
+                    result = response.controll_system(self.auth)
+                elif cmd == "life support":
+                    if self.auth is True:
+                        result = response.lifesupport(self.life_support)
+                    else:
+                        result = response.controll_system(self.auth)
+                elif cmd == "scuttle":
+                    if self.auth is True:
+                        result = response.scuttle()
                 else:
                     self.error = True
                     result = response.syntax_error()
@@ -227,6 +241,9 @@ class Ypsilon:
                         self.shower_5 = False
                         result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
                                                           self.shower_5)
+                    elif cmd == 'back':
+                        result = response.menu_controls()
+                        self.actions.pop()
                     else:
                         self.error = True
                         result = response.syntax_error()
@@ -241,12 +258,13 @@ class Ypsilon:
             json.dump({
                 'action': self.actions,
                 'timestamp': time.time(),
+                'auth': self.auth,
                 'airlock_docking_bay_1': self.airlock_docking_bay_1,
                 'airlock_docking_bay_2': self.airlock_docking_bay_2,
                 'airlock_mineshaft': self.airlock_mineshaft,
-                'shower_1':self.shower_1,
-                'shower_2':self.shower_2,
-                'shower_3':self.shower_3,
-                'shower_4':self.shower_4,
-                'shower_5':self.shower_5,
+                'shower_1': self.shower_1,
+                'shower_2': self.shower_2,
+                'shower_3': self.shower_3,
+                'shower_4': self.shower_4,
+                'shower_5': self.shower_5,
             }, outfile)
