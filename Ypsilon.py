@@ -34,7 +34,7 @@ class Ypsilon:
 
                 vars = ['airlock_docking_bay_1', 'airlock_docking_bay_2', 'airlock_mineshaft', 'shower_1', 'shower_2',
                         'shower_3', 'shower_4', 'shower_5', 'shower_1', 'shower_2', 'shower_3', 'shower_4', 'shower_5',
-                        'life_support','auth']
+                        'life_support', 'auth']
                 for v in vars:
                     if v in data:
                         exec("self." + v + "= " + str(data[v]))
@@ -120,7 +120,7 @@ class Ypsilon:
                     result = response.controll_shower(self.shower_1, self.shower_2, self.shower_3, self.shower_4,
                                                       self.shower_5)
                 elif cmd == "system":
-                    # self.actions.append(cmd)
+                    self.actions.append(cmd)
                     result = response.controll_system(self.auth)
                 elif cmd == "insert sonya keycard":
                     self.auth = True
@@ -128,14 +128,27 @@ class Ypsilon:
                 elif cmd == "remove sonya keycard":
                     self.auth = False
                     result = response.controll_system(self.auth)
-                elif cmd == "life support":
-                    if self.auth is True:
-                        result = response.lifesupport(self.life_support)
-                    else:
-                        result = response.controll_system(self.auth)
-                elif cmd == "scuttle":
-                    if self.auth is True:
-                        result = response.scuttle()
+
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            elif self.actions[1] == 'comms':
+                if cmd == "heracles":
+                    self.actions.append(cmd)
+                    result = response.comms_heracles()
+                elif cmd == "grasshopper":
+                    self.actions.append(cmd)
+                    result = response.comms_grasshoper()
+                elif cmd == 'back':
+                    result = response.comms_menu()
+                    self.actions.pop()
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            elif self.actions[1] == "roster":
+                if cmd == "back":
+                    self.actions.pop()
+                    result = response.menu_main()
                 else:
                     self.error = True
                     result = response.syntax_error()
@@ -167,8 +180,7 @@ class Ypsilon:
                 else:
                     self.error = True
                     result = response.syntax_error()
-            if self.actions[1] == 'controls':
-                print(cmd)
+            elif self.actions[1] == 'controls':
                 if self.actions[2] == "airlocks":
                     if cmd == "unlock mineshaft":
                         self.airlock_mineshaft = True
@@ -247,7 +259,64 @@ class Ypsilon:
                     else:
                         self.error = True
                         result = response.syntax_error()
+                elif self.actions[2] == "system":
+                    if cmd == "life support":
+                        self.actions.append(cmd)
+                        if self.auth is True:
+                            result = response.lifesupport(self.life_support)
+                        else:
+                            result = response.controll_system(self.auth)
+                    elif cmd == "scuttle":
+                        self.actions.append(cmd)
+                        if self.auth is True:
+                            result = response.scuttle()
+                        else:
+                            result = response.controll_system(self.auth)
+                    elif cmd == "back":
+                        result = response.menu_controls()
+                        self.actions.pop()
+                    elif cmd == "insert sonya keycard":
+                        self.auth = True
+                        result = response.controll_system(self.auth)
+                    elif cmd == "remove sonya keycard":
+                        self.auth = False
+                        result = response.controll_system(self.auth)
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
+            elif self.actions[1] == "comms":
+                if self.actions[2] == "heracles" or self.actions[2] == "grasshopper":
+                    if cmd == "end call":
+                        self.actions.pop()
+                        result = response.comms_menu()
+                    else:
+                        self.error = True
+                        result = response.syntax_error()
 
+
+        elif len(self.actions) == 4:
+            if self.actions[3] == "life support":
+                if cmd == 'back':
+                    result = response.controll_system(self.auth)
+                    self.actions.pop()
+                elif cmd == "life support off":
+                    self.life_support = False
+                    result = response.lifesupport(self.life_support)
+                elif cmd == "life support on":
+                    self.life_support = True
+                    result = response.lifesupport(self.life_support)
+                else:
+                    self.error = True
+                    result = response.syntax_error()
+            elif self.actions[3] == 'scuttle':
+                if cmd == "scuttle":
+                    result = response.autodestruction()
+                elif cmd == "back":
+                    result = response.controll_system(self.auth)
+                    self.actions.pop()
+                else:
+                    self.error = True
+                    result = response.syntax_error()
         if self.error is not True:
             self.save()
 
@@ -267,4 +336,5 @@ class Ypsilon:
                 'shower_3': self.shower_3,
                 'shower_4': self.shower_4,
                 'shower_5': self.shower_5,
+                'life_support': self.life_support
             }, outfile)
