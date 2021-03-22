@@ -3,7 +3,7 @@ import discord
 from StationMsg import StationMsg
 from Ypsilon import Ypsilon
 
-_TOKEN = ''
+_TOKEN = 'ODE4MTI2MDEwMTU1NDAxMjI4.YEThOA.RSkpdMzQ7yppmxcRH9RffanmRFo'
 client = discord.Client()
 _TERMINAL_START_CALL = '>'
 @client.event
