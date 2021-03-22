@@ -1,9 +1,9 @@
 import discord
-
+import os
 from StationMsg import StationMsg
 from Ypsilon import Ypsilon
 
-_TOKEN = 'ODE4MTI2MDEwMTU1NDAxMjI4.YEThOA.RSkpdMzQ7yppmxcRH9RffanmRFo'
+_TOKEN = os.getenv("TOKEN")
 client = discord.Client()
 _TERMINAL_START_CALL = '>'
 @client.event
