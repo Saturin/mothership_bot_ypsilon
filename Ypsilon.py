@@ -54,12 +54,29 @@ class Ypsilon:
                 json.dump({'action': [], 'timestamp': time.time(), 'auth': False}, outfile)
 
     def action(self, cmd):
+        result = ''
         response = StationMsg()
         cmd = cmd.replace('>', '').lower()
         # komendy specjalne
         if cmd == 'station':
             self.actions = []
-        result = ''
+        elif cmd == 'insert sonya keycard':
+            self.auth = True
+            self.save()
+            return  response.admin_msg(self.auth)
+        elif cmd == "remove sonya keycard":
+            self.auth = False
+            self.save()
+            return response.admin_msg(self.auth)
+        elif cmd == 'insert admin keycard':
+            self.auth = True
+            self.save()
+            return  response.admin_msg(self.auth)
+        elif cmd == "remove admin keycard":
+            self.auth = False
+            self.save()
+            return response.admin_msg(self.auth)
+
         # terminal opcje
         if len(self.actions) == 0:
             result = response.hello()
@@ -133,11 +150,11 @@ class Ypsilon:
                     self.error = True
                     result = response.syntax_error()
             elif self.actions[1] == 'comms':
-                if cmd == "heracles":
-                    self.actions.append(cmd)
+                if cmd in ['hail heracles',"heracles",'hail rsv heracles','hail rsv the heracles']:
+                    self.actions.append('heracles')
                     result = response.comms_heracles()
-                elif cmd == "grasshopper":
-                    self.actions.append(cmd)
+                elif cmd in ["grasshopper", 'hail grasshoper', 'hail imv grasshopper']:
+                    self.actions.append("grasshopper")
                     result = response.comms_grasshoper()
                 elif cmd == 'back':
                     result = response.comms_menu()
@@ -182,27 +199,27 @@ class Ypsilon:
                     result = response.syntax_error()
             elif self.actions[1] == 'controls':
                 if self.actions[2] == "airlocks":
-                    if cmd == "unlock mineshaft":
+                    if cmd in ["unlock mineshaft", "mineshaft unlock"]:
                         self.airlock_mineshaft = True
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
-                    elif cmd == "unlock dock 1" or cmd == "unlock docking bay 1":
+                    elif cmd in ["unlock dock 1", "unlock docking bay 1", "dock 1 unlock", "docking bay 1 unlock"]:
                         self.airlock_docking_bay_1 = True
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
-                    elif cmd == "unlock dock 2" or cmd == "unlock docking bay 2":
+                    elif cmd in ["unlock dock 2", "unlock docking bay 2", "dock 2 unlock", "docking bay 2 unlock"]:
                         self.airlock_docking_bay_2 = True
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
-                    elif cmd == "lock mineshaft":
+                    elif cmd in ["lock mineshaft", "mineshaft lock"]:
                         self.airlock_mineshaft = False
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
-                    elif cmd == "lock dock 1" or cmd == "lock docking bay 1":
+                    elif cmd in ["lock dock 1", "lock docking bay 1", "dock 1 lock", "docking bay 1 lock"]:
                         self.airlock_docking_bay_1 = False
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
-                    elif cmd == "lock dock 2" or cmd == "lock docking bay 2":
+                    elif cmd in ["lock dock 2", "lock docking bay 2", "dock 2 lock", "docking bay 2 lock"]:
                         self.airlock_docking_bay_2 = False
                         result = response.controls_airlock(self.airlock_docking_bay_1, self.airlock_docking_bay_2,
                                                            self.airlock_mineshaft)
@@ -286,23 +303,21 @@ class Ypsilon:
                         result = response.syntax_error()
             elif self.actions[1] == "comms":
                 if self.actions[2] == "heracles" or self.actions[2] == "grasshopper":
-                    if cmd == "end call":
+                    if cmd == "end call" or cmd == "end":
                         self.actions.pop()
                         result = response.comms_menu()
                     else:
                         self.error = True
                         result = response.syntax_error()
-
-
         elif len(self.actions) == 4:
             if self.actions[3] == "life support":
                 if cmd == 'back':
                     result = response.controll_system(self.auth)
                     self.actions.pop()
-                elif cmd == "life support off":
+                elif cmd in ["life support off", "life support false"]:
                     self.life_support = False
                     result = response.lifesupport(self.life_support)
-                elif cmd == "life support on":
+                elif cmd in ["life support on", "life support true"]:
                     self.life_support = True
                     result = response.lifesupport(self.life_support)
                 else:

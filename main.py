@@ -4,6 +4,7 @@ from StationMsg import StationMsg
 from Ypsilon import Ypsilon
 
 _TOKEN = os.getenv("TOKEN")
+
 client = discord.Client()
 _TERMINAL_START_CALL = '>'
 @client.event

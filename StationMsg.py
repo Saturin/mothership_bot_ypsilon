@@ -109,3 +109,11 @@ class StationMsg:
     def syntax_error(self):
         file = "syntax_error.txt"
         return self._read_and_format(file)
+
+    def admin_msg(self, auth):
+        if auth is True:
+            file = "admin_hello.txt"
+        else:
+            file = 'bye_admin.txt'
+
+        return self._read_and_format(file)
