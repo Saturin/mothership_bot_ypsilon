@@ -4,7 +4,6 @@ from StationMsg import StationMsg
 from Ypsilon import Ypsilon
 
 _TOKEN = os.getenv("TOKEN")
-
 client = discord.Client()
 _TERMINAL_START_CALL = '>'
 @client.event
@@ -16,6 +15,7 @@ async def on_message(message):
 
     if message.author == client.user:
         return
+
     if message.content.startswith(_TERMINAL_START_CALL):
         y = Ypsilon()
         response = y.action(message.content)

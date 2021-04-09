@@ -53,6 +53,24 @@ class Ypsilon:
             with open("./saves/action.json", 'w') as outfile:
                 json.dump({'action': [], 'timestamp': time.time(), 'auth': False}, outfile)
 
+    def reset(self):
+        self.actions = []
+        self.timestamp = None
+        self.error = False
+        # Zerowanie zapisu akcji po podanym czasie
+        self.terminal_waitinf = 300
+        self.auth = False
+        # zmienne
+        self.airlock_docking_bay_1 = False
+        self.airlock_docking_bay_2 = False
+        self.airlock_mineshaft = False
+        self.shower_1 = False
+        self.shower_2 = False
+        self.shower_3 = False
+        self.shower_4 = False
+        self.shower_5 = False
+        self.life_support = True
+
     def action(self, cmd):
         result = ''
         response = StationMsg()
@@ -76,7 +94,16 @@ class Ypsilon:
             self.auth = False
             self.save()
             return response.admin_msg(self.auth)
-
+        elif cmd == "admin status":
+            f = open("./saves/action.json",'r')
+            response = f.read()
+            f.close()
+            return response
+        elif cmd == "admin reset":
+            self.reset()
+            os.remove("./saves/action.json")
+            self.save()
+            return "Game reset"
         # terminal opcje
         if len(self.actions) == 0:
             result = response.hello()
